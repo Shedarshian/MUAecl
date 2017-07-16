@@ -67,12 +67,14 @@ void ReadIns::Read()
 			ReadIns::globalVariable.insert(pair<string, pair<int, NumType>>(name,
 				pair<int, NumType>(n, c == "int" ? NumType::Int : NumType::Float)));
 		}
+		//读取符号常量
 		else if (mode == "const") {
 			stringstream s = stringstream(buffer);
 			string name; string key;
 			s >> name >> key;
 			ReadIns::constant.insert(pair<string, string>(name, key));
 		}
+		//读取变换mode
 		else if (mode == "mode") {
 			stringstream s = stringstream(buffer);
 			int n; s >> n;
@@ -86,19 +88,23 @@ void ReadIns::Read()
 			ReadIns::mode.insert(pair<string, pair<int, deque<NumType>>>(name,
 				pair<int, deque<NumType>>(n, lnt)));
 		}
+		//读取集成函数（包括在关键字里）
 		else if (mode == "integrated function") {
 			ReadIns::keyWord.insert(string(buffer));
 			ReadIns::integratedFunction.insert(string(buffer));
 		}
+		//读取关键字
 		else if (mode == "keyword" || mode == "preserve keyword") {
 			ReadIns::keyWord.insert(string(buffer));
 		}
+		//读取自定义函数（包括在关键字里）
 		else if (mode == "custom function") {
 			ReadIns::keyWord.insert(string(buffer));
 			ReadIns::customFunction.insert(string(buffer));
 		}
 	}
 	ifstream indef("default.ini");
+	//读取default.ecl中的函数名
 	while (!indef.eof()) {
 		indef.getline(buffer, 255);
 		defaultList.insert(string(buffer));

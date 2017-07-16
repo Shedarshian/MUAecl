@@ -6,22 +6,28 @@
 
 using namespace std;
 
+//表达式tree结构
 struct ExpTree {
+	//Token类型
 	static enum Type {
 		Num, Var, SignOne, SignTwo
 	};
-	Type type;
-	bool Float;
+	Type type;				//节点token类型
+	bool Float;				//节点是否为浮点
+	//节点存的值
 	union {
-		int valueI;
-		float valueF;
-		string* var;
-		string* sign;
+		int valueI;			//整型数
+		float valueF;		//浮点型数
+		string* var;		//变量名
+		string* sign;		//符号
 	} value;
-	ExpTree* leftTree;
-	ExpTree* rightTree;
-	ExpTree* parentTree;
+	ExpTree* leftTree;		//左子树
+	ExpTree* rightTree;		//右子树，一元操作符存入右子树
+	ExpTree* parentTree;	//母树
+	
+	//输出
 	string Out(int Tab) {
+		//数
 		if (type == Type::Num) {
 			char c[20];
 			if (Float)
@@ -30,6 +36,7 @@ struct ExpTree {
 				sprintf_s(c, "%d", value.valueI);
 			return string(Tab * 4, ' ') + string(c);
 		}
+		//一元操作符
 		else if (type == Type::SignOne) {
 			string c;
 			if (*(value.sign) == "_f")
@@ -40,10 +47,12 @@ struct ExpTree {
 				c = rightTree->Out(Tab) + ";\n" + string(Tab * 4, ' ') + signIns(rightTree->Float, *(value.sign));
 			return c;
 		}
+		//二元操作符
 		else if (type == Type::SignTwo) {
 			return leftTree->Out(Tab) + ";\n" + rightTree->Out(Tab) + ";\n" + string(Tab * 4, ' ')
 				+ signIns(leftTree->Float || rightTree->Float, *(value.sign));
 		}
+		//变量
 		else {
 			return string(Tab * 4, ' ') + ((*(value.var)).at(0) == '[' ? "" :
 				(Float ? "%" : "$")) + *(value.var);
